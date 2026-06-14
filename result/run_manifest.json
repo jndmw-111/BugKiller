@@ -1,0 +1,48 @@
+{
+  "run_id": "dev-multistrategy-20260614",
+  "started_at": "2026-06-14T02:52:08.679912+00:00",
+  "independent_run": true,
+  "minimum_strategy_families": 3,
+  "strategy_portfolio": [
+    "input-and-parsing",
+    "authorization-and-ownership",
+    "state-and-workflow",
+    "data-integrity-and-failure-paths",
+    "file-and-injection-surfaces",
+    "configuration-and-integration"
+  ],
+  "selected_strategies": [
+    "input-and-parsing",
+    "data-integrity-and-failure-paths",
+    "configuration-and-integration"
+  ],
+  "strategy_status": {
+    "input-and-parsing": "selected: validate documented type and numeric boundaries",
+    "data-integrity-and-failure-paths": "selected: verify valid discounts preserve arithmetic invariants",
+    "configuration-and-integration": "selected: verify the documented package export remains callable without the blocked service",
+    "authorization-and-ownership": "not applicable: fixture has no identity, role, tenant, or owned resource",
+    "state-and-workflow": "not applicable: fixture exposes a stateless pure pricing function",
+    "file-and-injection-surfaces": "not applicable: fixture has no file, template, query, command, or serialization input"
+  },
+  "candidate_budget": 8,
+  "test_budget": 30,
+  "command_timeout_seconds": 120,
+  "fallback_levels": [
+    "full-system",
+    "existing-tests",
+    "subproject-or-module",
+    "public-callable-surface",
+    "isolated-local-harness",
+    "pure-logic-verification",
+    "static-only-candidate"
+  ],
+  "fallback_plan": {
+    "full-system": "attempt service entry point and capture the missing dependency",
+    "existing-tests": "run offline unittest suite",
+    "public-callable-surface": "invoke legacy_shop.checkout_total directly"
+  },
+  "notes": [
+    "The Agent must select at least three relevant strategies.",
+    "This run must not inherit findings or generated tests from another run."
+  ]
+}

@@ -1,0 +1,9 @@
+test_public_package_export_is_available_offline (__main__.ConfigurationIntegrationStrategyTest) ... ok
+test_valid_discounts_do_not_increase_total (__main__.DataIntegrityStrategyTest) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+
+EXIT_CODE=0

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Legacy System Vulnerability Hunter"
+  short_description: "Verify bugs in an authorized unknown codebase"
+  default_prompt: "Inspect the authorized code/ system in one independent run, use multiple relevant vulnerability strategies, continue through safe fallback levels if full startup fails, execute and reproduce real bugs, and write auditable evidence to result/ and logs/."

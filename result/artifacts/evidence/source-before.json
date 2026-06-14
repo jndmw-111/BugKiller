@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-06-14T02:56:01.277830+00:00",
+  "source": "work/tests/fixtures/sample_legacy_app",
+  "file_count": 6,
+  "total_bytes": 2174,
+  "files": {
+    "README.md": {
+      "type": "file",
+      "size": 596,
+      "sha256": "7617194d2d2d18a12c0277cbaff5c212805aeb7a1983b6ed8103c026e748f2f3"
+    },
+    "pyproject.toml": {
+      "type": "file",
+      "size": 82,
+      "sha256": "fd290f2f5fe57261e8694a2224c180ff7576b4ebda0362c8c5f7dd14232d7f4b"
+    },
+    "server.py": {
+      "type": "file",
+      "size": 311,
+      "sha256": "068e1c64efee2e121054683268e12a8b1ff6c8b2472257c4d5ea1ca2d63536d8"
+    },
+    "legacy_shop/__init__.py": {
+      "type": "file",
+      "size": 101,
+      "sha256": "27dacee8dbe4f954a45e48a8ae0bf96c4ecc66fe301135a472089d4e0b9f639f"
+    },
+    "legacy_shop/pricing.py": {
+      "type": "file",
+      "size": 695,
+      "sha256": "3150d1177ebec6e6a461e1c03b3b4d45dfd9c00e3494ab3da9625ccb81ac5cdb"
+    },
+    "tests/test_pricing.py": {
+      "type": "file",
+      "size": 389,
+      "sha256": "768171531fd1b97811041cf5685cc7c95191142a6fe8b8f409b133fc75794b66"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+test_final_submission_validation (test_submission_framework.ArtifactAndTraceTest) ... ok
+test_hash_chain_detects_tampering (test_submission_framework.ArtifactAndTraceTest) ... ok
+test_prepare_run_resets_outputs_but_not_code (test_submission_framework.ArtifactAndTraceTest) ... ok
+test_result_directories_are_initialized (test_submission_framework.ArtifactAndTraceTest) ... ok
+test_sensitive_information_redaction (test_submission_framework.ArtifactAndTraceTest) ... ok
+test_trace_sequence_redaction_and_hash_chain (test_submission_framework.ArtifactAndTraceTest) ... ok
+test_discovery_does_not_modify_source (test_submission_framework.DiscoveryTest) ... ok
+test_missing_code_is_reported (test_submission_framework.DiscoveryTest) ... ok
+test_project_discovery_identifies_fixture (test_submission_framework.DiscoveryTest) ... ok
+test_source_snapshot_detects_changes_without_writing_source (test_submission_framework.DiscoveryTest) ... ok
+test_all_cli_scripts_support_help (test_submission_framework.ScriptInterfaceTest) ... ok
+test_core_instructions_are_agent_brand_neutral (test_submission_framework.StructureAndSkillTest) ... ok
+test_instruction_contains_required_workflow (test_submission_framework.StructureAndSkillTest) ... ok
+test_prompts_do_not_contain_fixture_answers (test_submission_framework.StructureAndSkillTest) ... ok
+test_required_layout_is_complete (test_submission_framework.StructureAndSkillTest) ... ok
+test_skill_frontmatter_is_exact (test_submission_framework.StructureAndSkillTest) ... ok
+test_skill_references_exist (test_submission_framework.StructureAndSkillTest) ... ok
+test_skill_requires_multi_strategy_and_fallback (test_submission_framework.StructureAndSkillTest) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.343s
+
+OK
+
+EXIT_CODE=0

@@ -1,0 +1,3 @@
+{"actual_total": 1010, "expected": "ValueError for discount_percent outside 0 through 50", "input": {"discount_percent": -1, "subtotal_cents": 1000}, "total_increased": true}
+
+EXIT_CODE=0

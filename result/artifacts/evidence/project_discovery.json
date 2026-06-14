@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-06-14T02:56:01.306300+00:00",
+  "source": "work/tests/fixtures/sample_legacy_app",
+  "file_count": 6,
+  "file_limit_reached": false,
+  "sampled_bytes": 2174,
+  "languages": {
+    "Python": 4
+  },
+  "extensions": {
+    ".py": 4,
+    ".md": 1,
+    ".toml": 1
+  },
+  "manifests": [
+    {
+      "path": "work/tests/fixtures/sample_legacy_app/pyproject.toml",
+      "language_hint": "Python",
+      "build_hint": "Python packaging/build"
+    }
+  ],
+  "subprojects": [
+    "."
+  ],
+  "top_level_file_counts": {
+    "legacy_shop": 2,
+    "README.md": 1,
+    "pyproject.toml": 1,
+    "server.py": 1,
+    "tests": 1
+  },
+  "command_hints": {
+    "test": [
+      {
+        "working_directory": ".",
+        "command": "python3 -m unittest discover",
+        "status": "hint-only"
+      },
+      {
+        "working_directory": ".",
+        "command": "python3 -m pytest",
+        "status": "hint-only"
+      }
+    ],
+    "build": [
+      {
+        "working_directory": ".",
+        "command": "python3 -m build",
+        "status": "hint-only"
+      }
+    ]
+  },
+  "likely_entry_points": [
+    "work/tests/fixtures/sample_legacy_app/server.py"
+  ],
+  "test_paths": [
+    "work/tests/fixtures/sample_legacy_app/README.md",
+    "work/tests/fixtures/sample_legacy_app/pyproject.toml",
+    "work/tests/fixtures/sample_legacy_app/server.py",
+    "work/tests/fixtures/sample_legacy_app/legacy_shop/__init__.py",
+    "work/tests/fixtures/sample_legacy_app/legacy_shop/pricing.py",
+    "work/tests/fixtures/sample_legacy_app/tests/test_pricing.py"
+  ],
+  "notes": [
+    "Hints are an inventory, not a vulnerability conclusion.",
+    "The platform Agent must verify command hints, frameworks, entry points, and constraints.",
+    "Command hints are not authorization to install remote dependencies."
+  ]
+}
