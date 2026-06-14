@@ -1,0 +1,26 @@
+{
+  "test": "redos-catastrophic-backtracking",
+  "results": [
+    {
+      "test": "valid-normal",
+      "input_len": 7,
+      "vulnerable_time_s": 4.6e-05,
+      "fixed_time_s": 3.3e-05,
+      "ratio": 1.4
+    },
+    {
+      "test": "valid-normal-2",
+      "input_len": 7,
+      "vulnerable_time_s": 2e-06,
+      "fixed_time_s": 0.0,
+      "ratio": "inf"
+    },
+    {
+      "test": "redos-attack-no-hash",
+      "input_len": 30,
+      "vulnerable_time_s": 92.087787,
+      "fixed_time_s": 5.4e-05,
+      "ratio": 1701516.2
+    }
+  ]
+}

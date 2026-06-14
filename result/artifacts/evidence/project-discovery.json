@@ -1,0 +1,366 @@
+{
+  "generated_at": "2026-06-14T15:48:16.184655+00:00",
+  "source": "code",
+  "file_count": 96,
+  "file_limit_reached": false,
+  "sampled_bytes": 291627,
+  "languages": {
+    "JavaScript": 44
+  },
+  "extensions": {
+    ".js": 44,
+    ".html": 24,
+    ".json": 9,
+    "[none]": 7,
+    ".yml": 4,
+    ".md": 3,
+    ".png": 2,
+    ".ico": 1,
+    ".crt": 1,
+    ".key": 1
+  },
+  "manifests": [
+    {
+      "path": "code/Dockerfile",
+      "language_hint": "Container",
+      "build_hint": "Docker"
+    },
+    {
+      "path": "code/package.json",
+      "language_hint": "JavaScript/TypeScript",
+      "build_hint": "Node package/build"
+    }
+  ],
+  "subprojects": [
+    "."
+  ],
+  "top_level_file_counts": {
+    "app": 46,
+    "test": 21,
+    "config": 5,
+    "artifacts": 3,
+    ".github": 2,
+    ".dockerignore": 1,
+    ".gitignore": 1,
+    ".jshintignore": 1,
+    ".jshintrc": 1,
+    ".travis.yml": 1,
+    "CODE_OF_CONDUCT.md": 1,
+    "CONTRIBUTING.md": 1,
+    "Dockerfile": 1,
+    "Gruntfile.js": 1,
+    "LICENSE": 1,
+    "Procfile": 1,
+    "README.md": 1,
+    "app.json": 1,
+    "cypress.json": 1,
+    "docker-compose.yml": 1,
+    "nodemon.json": 1,
+    "package-lock.json": 1,
+    "package.json": 1,
+    "server.js": 1
+  },
+  "command_hints": {
+    "setup": [
+      {
+        "working_directory": ".",
+        "command": "npm install",
+        "status": "hint-only"
+      }
+    ],
+    "test": [
+      {
+        "working_directory": ".",
+        "command": "npm test",
+        "status": "hint-only"
+      }
+    ],
+    "run": [
+      {
+        "working_directory": ".",
+        "command": "npm start",
+        "status": "hint-only"
+      }
+    ]
+  },
+  "likely_entry_points": [
+    "code/app/routes/index.js",
+    "code/test/e2e/plugins/index.js",
+    "code/test/e2e/support/index.js"
+  ],
+  "test_paths": [
+    "code/test/e2e/tsconfig.json",
+    "code/test/e2e/fixtures/users/admin.json",
+    "code/test/e2e/fixtures/users/new_user.json",
+    "code/test/e2e/fixtures/users/user.json",
+    "code/test/e2e/integration/allocations_spec.js",
+    "code/test/e2e/integration/benefits_spec.js",
+    "code/test/e2e/integration/contributions_spec.js",
+    "code/test/e2e/integration/dashboard_spec.js",
+    "code/test/e2e/integration/general_spec.js",
+    "code/test/e2e/integration/learn_spec.js",
+    "code/test/e2e/integration/login_spec.js",
+    "code/test/e2e/integration/logout_spec.js",
+    "code/test/e2e/integration/memos_spec.js",
+    "code/test/e2e/integration/profile_spec.js",
+    "code/test/e2e/integration/research_spec.js",
+    "code/test/e2e/integration/signup_spec.js",
+    "code/test/e2e/integration/tutorial_spec.js",
+    "code/test/e2e/plugins/index.js",
+    "code/test/e2e/support/commands.js",
+    "code/test/e2e/support/index.js",
+    "code/test/security/profile-test.js"
+  ],
+  "answer_bearing_path_hints": [
+    {
+      "path": "code/app/routes/tutorial.js",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a1.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a10.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a2.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a3.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a4.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a5.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a6.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a7.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a8.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/a9.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [
+        "known-vulnerability"
+      ],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/layout.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/redos.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/app/views/tutorial/ssrf.html",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    },
+    {
+      "path": "code/test/e2e/integration/tutorial_spec.js",
+      "matched_path_markers": [
+        "tutorial"
+      ],
+      "matched_content_markers": [],
+      "status": "review-required"
+    }
+  ],
+  "answer_hint_match_count": 15,
+  "answer_hint_limit_reached": false,
+  "attack_surface_path_hints": {
+    "ingress": [
+      "code/app/routes/allocations.js",
+      "code/app/routes/benefits.js",
+      "code/app/routes/contributions.js",
+      "code/app/routes/error.js",
+      "code/app/routes/index.js",
+      "code/app/routes/memos.js",
+      "code/app/routes/profile.js",
+      "code/app/routes/research.js",
+      "code/app/routes/session.js",
+      "code/app/routes/tutorial.js",
+      "code/test/e2e/support/commands.js"
+    ],
+    "identity-and-authorization": [
+      "code/app/routes/session.js",
+      "code/app/views/login.html",
+      "code/test/e2e/integration/login_spec.js"
+    ],
+    "state-and-persistence": [
+      "code/app/data/allocations-dao.js",
+      "code/app/data/benefits-dao.js",
+      "code/app/data/contributions-dao.js",
+      "code/app/data/memos-dao.js",
+      "code/app/data/profile-dao.js",
+      "code/app/data/research-dao.js",
+      "code/app/data/user-dao.js",
+      "code/artifacts/db-reset.js"
+    ],
+    "parsing-files-and-output": [
+      "code/app/views/allocations.html",
+      "code/app/views/benefits.html",
+      "code/app/views/contributions.html",
+      "code/app/views/dashboard.html",
+      "code/app/views/error-template.html",
+      "code/app/views/layout.html",
+      "code/app/views/login.html",
+      "code/app/views/memos.html",
+      "code/app/views/profile.html",
+      "code/app/views/research.html",
+      "code/app/views/signup.html",
+      "code/app/views/tutorial/a1.html",
+      "code/app/views/tutorial/a10.html",
+      "code/app/views/tutorial/a2.html",
+      "code/app/views/tutorial/a3.html",
+      "code/app/views/tutorial/a4.html",
+      "code/app/views/tutorial/a5.html",
+      "code/app/views/tutorial/a6.html",
+      "code/app/views/tutorial/a7.html",
+      "code/app/views/tutorial/a8.html",
+      "code/app/views/tutorial/a9.html",
+      "code/app/views/tutorial/layout.html",
+      "code/app/views/tutorial/redos.html",
+      "code/app/views/tutorial/ssrf.html"
+    ],
+    "configuration-and-integration": [
+      "code/docker-compose.yml",
+      "code/config/config.js",
+      "code/config/env/all.js",
+      "code/config/env/development.js",
+      "code/config/env/production.js",
+      "code/config/env/test.js",
+      "code/test/e2e/integration/allocations_spec.js",
+      "code/test/e2e/integration/benefits_spec.js",
+      "code/test/e2e/integration/contributions_spec.js",
+      "code/test/e2e/integration/dashboard_spec.js",
+      "code/test/e2e/integration/general_spec.js",
+      "code/test/e2e/integration/learn_spec.js",
+      "code/test/e2e/integration/login_spec.js",
+      "code/test/e2e/integration/logout_spec.js",
+      "code/test/e2e/integration/memos_spec.js",
+      "code/test/e2e/integration/profile_spec.js",
+      "code/test/e2e/integration/research_spec.js",
+      "code/test/e2e/integration/signup_spec.js",
+      "code/test/e2e/integration/tutorial_spec.js",
+      "code/test/e2e/plugins/index.js"
+    ]
+  },
+  "system_archetype_hints": [
+    {
+      "archetype": "web-api",
+      "signal_count": 13,
+      "evidence_paths": [
+        "code/server.js",
+        "code/app/routes/allocations.js",
+        "code/app/routes/benefits.js",
+        "code/app/routes/contributions.js",
+        "code/app/routes/error.js",
+        "code/app/routes/index.js",
+        "code/app/routes/memos.js",
+        "code/app/routes/profile.js",
+        "code/app/routes/research.js",
+        "code/app/routes/session.js",
+        "code/app/routes/tutorial.js",
+        "code/artifacts/cert/server.crt",
+        "code/artifacts/cert/server.key"
+      ],
+      "status": "hint-only"
+    },
+    {
+      "archetype": "identity-access",
+      "signal_count": 3,
+      "evidence_paths": [
+        "code/app/routes/session.js",
+        "code/app/views/login.html",
+        "code/test/e2e/integration/login_spec.js"
+      ],
+      "status": "hint-only"
+    }
+  ],
+  "complexity": {
+    "reasons": [
+      "multiple-entry-points",
+      "broad-attack-surface"
+    ],
+    "suggested_strategy_target": 4,
+    "populated_attack_surface_categories": 5
+  },
+  "notes": [
+    "Hints are an inventory, not a vulnerability conclusion.",
+    "Answer-bearing path and content hints must be temporarily quarantined, then reviewed after the independent first pass.",
+    "Attack-surface path hints are starting points, not proof that an interface is reachable.",
+    "System archetype hints require Agent verification from behavior and trust boundaries.",
+    "The platform Agent must verify command hints, frameworks, entry points, and constraints.",
+    "Command hints are not authorization to install remote dependencies."
+  ]
+}

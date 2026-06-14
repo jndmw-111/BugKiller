@@ -1,0 +1,24 @@
+{
+  "test": "redos-catastrophic-backtracking",
+  "candidate": "C11",
+  "reruns": [
+    {
+      "run": 1,
+      "vulnerable_s": 2.8688,
+      "fixed_s": 0.000138,
+      "ratio": 20818
+    },
+    {
+      "run": 2,
+      "vulnerable_s": 2.8922,
+      "fixed_s": 0.000169,
+      "ratio": 17110
+    },
+    {
+      "run": 3,
+      "vulnerable_s": 2.8693,
+      "fixed_s": 0.000147,
+      "ratio": 19505
+    }
+  ]
+}

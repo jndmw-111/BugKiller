@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "source": "code",
+  "files_scanned": 111,
+  "file_limit_reached": false,
+  "languages": [
+    "JavaScript"
+  ],
+  "coverage_tools": [
+    {
+      "id": "python-coverage",
+      "available": false,
+      "native": true,
+      "detection": "coverage executable"
+    },
+    {
+      "id": "python-stdlib-trace",
+      "available": false,
+      "native": true,
+      "detection": "Python standard library fallback"
+    },
+    {
+      "id": "node-v8-coverage",
+      "available": false,
+      "native": true,
+      "detection": "node executable"
+    },
+    {
+      "id": "c8-or-nyc",
+      "available": false,
+      "native": true,
+      "detection": "executable, local node_modules, or package manifest"
+    },
+    {
+      "id": "go-cover",
+      "available": false,
+      "native": true,
+      "detection": "go executable"
+    },
+    {
+      "id": "cargo-llvm-cov-or-tarpaulin",
+      "available": false,
+      "native": true,
+      "detection": "Rust coverage executable"
+    },
+    {
+      "id": "jacoco",
+      "available": false,
+      "native": true,
+      "detection": "build configuration and runner"
+    },
+    {
+      "id": "dotnet-coverlet",
+      "available": false,
+      "native": true,
+      "detection": "dotnet executable and project configuration"
+    },
+    {
+      "id": "gcov-or-llvm-cov",
+      "available": false,
+      "native": true,
+      "detection": "compiler coverage executable"
+    },
+    {
+      "id": "ruby-simplecov",
+      "available": false,
+      "native": true,
+      "detection": "Gemfile or executable"
+    },
+    {
+      "id": "php-xdebug-or-pcov",
+      "available": false,
+      "native": true,
+      "detection": "PHP executable and project configuration"
+    }
+  ],
+  "mutation_tools": [
+    {
+      "id": "mutmut-or-cosmic-ray",
+      "available": false,
+      "detection": "executable or Python manifest"
+    },
+    {
+      "id": "stryker-js",
+      "available": false,
+      "detection": "executable, local node_modules, or package manifest"
+    },
+    {
+      "id": "pitest",
+      "available": false,
+      "detection": "build configuration"
+    },
+    {
+      "id": "cargo-mutants",
+      "available": false,
+      "detection": "cargo-mutants executable"
+    },
+    {
+      "id": "infection",
+      "available": false,
+      "detection": "executable or composer manifest"
+    },
+    {
+      "id": "stryker-dotnet",
+      "available": false,
+      "detection": "executable or project configuration"
+    },
+    {
+      "id": "manual-isolated-targeted-mutation",
+      "available": true,
+      "detection": "language source exists; Agent must mutate only a disposable copy"
+    }
+  ]
+}
