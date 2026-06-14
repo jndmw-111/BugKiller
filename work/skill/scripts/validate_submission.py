@@ -11,6 +11,7 @@ from prepare_run import (
     BUG_DIRECTIONS,
     COVERAGE_TARGET_PERCENT,
     MUTATION_TARGET_PERCENT,
+    RUNTIME_FALLBACK_LEVELS,
     SYSTEM_ARCHETYPES,
     TARGETED_MUTANT_BUDGET,
     TECHNIQUES,
@@ -78,6 +79,16 @@ COMPLETION_WEIGHTS = {
     "planned": 0.0,
 }
 ALLOWED_RUNTIME_STATUS = {"measured", "blocked", "unsupported"}
+ALLOWED_EXECUTION_PHASES = {
+    "baseline",
+    "build",
+    "test",
+    "start",
+    "health-check",
+    "generated-test",
+    "coverage",
+    "mutation",
+}
 MUTATION_OPERATORS = {
     "condition-negation",
     "boundary-change",
@@ -959,6 +970,147 @@ def _validate_runtime_quality(
                 )
 
 
+def _validate_runtime_execution(
+    root: Path,
+    manifest: dict,
+    errors: list[str],
+) -> None:
+    runtime = manifest.get("runtime_execution")
+    if not isinstance(runtime, dict):
+        errors.append("run manifest runtime_execution must be an object")
+        return
+    capabilities = _read_json_artifact(
+        root,
+        runtime.get("capabilities_path"),
+        "result/artifacts/evidence",
+        "runtime_execution.capabilities_path",
+        errors,
+    )
+    if capabilities:
+        if capabilities.get("schema_version") != 1:
+            errors.append("runtime capabilities schema_version must be 1")
+        if capabilities.get("file_limit_reached") is not False:
+            errors.append("runtime capabilities scan was truncated")
+        if not isinstance(capabilities.get("runtimes"), list):
+            errors.append("runtime capabilities runtimes must be a list")
+        if not isinstance(capabilities.get("command_candidates"), list):
+            errors.append("runtime capabilities command_candidates must be a list")
+
+    full_system_status = runtime.get("full_system_status")
+    if full_system_status not in {"started", "failed", "not-applicable"}:
+        errors.append(
+            "runtime_execution.full_system_status must be started, failed, or not-applicable"
+        )
+    attempts = runtime.get("attempts")
+    if not isinstance(attempts, list) or not attempts:
+        errors.append("runtime_execution.attempts must contain execution attempts")
+        attempts = []
+
+    attempt_ids: set[str] = set()
+    passed_levels: set[str] = set()
+    passed_full_system = False
+    lower_level_attempted = False
+    for index, attempt in enumerate(attempts, start=1):
+        prefix = f"runtime_execution.attempts[{index}]"
+        if not isinstance(attempt, dict):
+            errors.append(f"{prefix} must be an object")
+            continue
+        attempt_id = attempt.get("id")
+        phase = attempt.get("phase")
+        level = attempt.get("fallback_level")
+        outcome = attempt.get("outcome")
+        if not isinstance(attempt_id, str) or not attempt_id.strip():
+            errors.append(f"{prefix}.id must be non-empty")
+        elif attempt_id in attempt_ids:
+            errors.append(f"{prefix}.id duplicates another attempt")
+        else:
+            attempt_ids.add(attempt_id)
+        if phase not in ALLOWED_EXECUTION_PHASES:
+            errors.append(f"{prefix}.phase is invalid")
+        if level not in RUNTIME_FALLBACK_LEVELS:
+            errors.append(f"{prefix}.fallback_level is invalid")
+        if outcome not in {"passed", "failed", "timeout"}:
+            errors.append(f"{prefix}.outcome is invalid")
+        report = _read_json_artifact(
+            root,
+            attempt.get("report_path"),
+            "result/artifacts/evidence",
+            f"{prefix}.report_path",
+            errors,
+        )
+        if not report:
+            continue
+        if report.get("schema_version") != 1:
+            errors.append(f"{prefix} report schema_version must be 1")
+        if report.get("kind") not in {"command", "service"}:
+            errors.append(f"{prefix} report kind is invalid")
+        if report.get("mode") != "isolated-copy":
+            errors.append(f"{prefix} report must use isolated-copy mode")
+        if report.get("source_unchanged") is not True:
+            errors.append(f"{prefix} report must prove selected code source unchanged")
+        report_source = report.get("source")
+        if (
+            not isinstance(report_source, str)
+            or not Path(report_source).parts
+            or Path(report_source).parts[0] != "code"
+        ):
+            errors.append(f"{prefix} report source must be under code/")
+        actual_outcome = None
+        if report.get("kind") == "command":
+            result = report.get("result")
+            if isinstance(result, dict):
+                actual_outcome = result.get("status")
+        elif report.get("kind") == "service":
+            actual_outcome = report.get("status")
+        if actual_outcome not in {"passed", "failed", "timeout"}:
+            errors.append(f"{prefix} report has no valid outcome")
+        elif outcome != actual_outcome:
+            errors.append(f"{prefix}.outcome does not match runtime report")
+        if outcome == "passed":
+            passed_levels.add(level)
+            if level == "full-system":
+                passed_full_system = True
+        if level != "full-system":
+            lower_level_attempted = True
+
+    recorded_levels = runtime.get("successful_levels")
+    if (
+        not isinstance(recorded_levels, list)
+        or not all(item in RUNTIME_FALLBACK_LEVELS for item in recorded_levels)
+        or len(recorded_levels) != len(set(recorded_levels))
+    ):
+        errors.append("runtime_execution.successful_levels is invalid")
+    elif set(recorded_levels) != passed_levels:
+        errors.append("runtime_execution.successful_levels does not match attempts")
+
+    blockers = runtime.get("blockers")
+    if not isinstance(blockers, list):
+        errors.append("runtime_execution.blockers must be a list")
+    else:
+        for index, blocker in enumerate(blockers, start=1):
+            prefix = f"runtime_execution.blockers[{index}]"
+            if not isinstance(blocker, dict):
+                errors.append(f"{prefix} must be an object")
+                continue
+            if not isinstance(blocker.get("summary"), str) or not blocker[
+                "summary"
+            ].strip():
+                errors.append(f"{prefix}.summary must be non-empty")
+            if not _is_artifact_file(
+                root,
+                blocker.get("evidence_path"),
+                "result/artifacts/evidence",
+            ):
+                errors.append(f"{prefix}.evidence_path must exist")
+
+    if full_system_status == "started" and not passed_full_system:
+        errors.append("full system is marked started without a passed full-system attempt")
+    if full_system_status == "failed" and not lower_level_attempted:
+        errors.append("failed full-system startup requires a lower-level fallback attempt")
+    if manifest.get("run_status") == "complete" and not passed_levels:
+        errors.append("complete run requires at least one successful runtime attempt")
+
+
 def _validate_lead_registry(
     root: Path,
     manifest: dict,
@@ -1130,8 +1282,8 @@ def _validate_lead_registry(
 def _validate_manifest(root: Path, manifest: dict, errors: list[str]) -> None:
     if not manifest:
         return
-    if manifest.get("schema_version") != 5:
-        errors.append("run manifest schema_version must be 5")
+    if manifest.get("schema_version") != 6:
+        errors.append("run manifest schema_version must be 6")
     if manifest.get("independent_run") is not True:
         errors.append("run manifest must declare independent_run=true")
 
@@ -1336,6 +1488,7 @@ def _validate_manifest(root: Path, manifest: dict, errors: list[str]) -> None:
                 )
 
     _validate_coverage_plan(root, manifest, candidates_by_id, errors)
+    _validate_runtime_execution(root, manifest, errors)
     _validate_runtime_quality(root, manifest, candidates_by_id, errors)
     _validate_lead_registry(root, manifest, candidates_by_id, errors)
 

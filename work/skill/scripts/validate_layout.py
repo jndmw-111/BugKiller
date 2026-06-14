@@ -20,6 +20,7 @@ REQUIRED_FILES = (
     "work/skill/references/runtime-quality.md",
     "work/skill/scripts/prepare_run.py",
     "work/skill/scripts/quality_tools.py",
+    "work/skill/scripts/runtime_runner.py",
     "work/skill/scripts/source_snapshot.py",
 )
 REQUIRED_DIRS = (

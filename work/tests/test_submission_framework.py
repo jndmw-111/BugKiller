@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import socket
 import shutil
 import subprocess
 import sys
@@ -28,6 +29,7 @@ from prepare_run import (
 )
 from quality_tools import detect_tools, score_mutants
 from redact import REDACTED, redact_text, redact_value
+from runtime_runner import execute_isolated, execute_service, inspect_runtime
 from source_snapshot import snapshot
 from trace_log import append_event
 from validate_layout import validate
@@ -92,7 +94,7 @@ def create_minimal_root(root: Path) -> None:
     ]
     mutation_results = {"mutants": mutants}
     manifest = {
-        "schema_version": 5,
+        "schema_version": 6,
         "run_id": "test-run",
         "independent_run": True,
         "run_status": "complete",
@@ -224,6 +226,25 @@ def create_minimal_root(root: Path) -> None:
                 "unavailable_reason": "",
             },
         },
+        "runtime_execution": {
+            "capabilities_path": (
+                "result/artifacts/evidence/runtime-capabilities.json"
+            ),
+            "full_system_status": "not-applicable",
+            "attempts": [
+                {
+                    "id": "RUN-001",
+                    "phase": "test",
+                    "fallback_level": "existing-tests",
+                    "outcome": "passed",
+                    "report_path": (
+                        "result/artifacts/evidence/runtime-report.json"
+                    ),
+                }
+            ],
+            "successful_levels": ["existing-tests"],
+            "blockers": [],
+        },
         "required_test_techniques": [
             "normal-control",
             "boundary",
@@ -247,6 +268,7 @@ def create_minimal_root(root: Path) -> None:
         "work/skill/references/runtime-quality.md": "runtime quality",
         "work/skill/scripts/prepare_run.py": "script",
         "work/skill/scripts/quality_tools.py": "script",
+        "work/skill/scripts/runtime_runner.py": "script",
         "work/skill/scripts/source_snapshot.py": "script",
         "result/output.md": "output",
         "result/project_profile.md": "profile",
@@ -275,6 +297,24 @@ def create_minimal_root(root: Path) -> None:
         ),
         "result/artifacts/evidence/mutation.diff": "- false\n+ true\n",
         "result/artifacts/evidence/mutation-run.txt": "mutant killed\n",
+        "result/artifacts/evidence/runtime-capabilities.json": json.dumps(
+            {
+                "schema_version": 1,
+                "file_limit_reached": False,
+                "runtimes": [],
+                "command_candidates": [],
+            }
+        ),
+        "result/artifacts/evidence/runtime-report.json": json.dumps(
+            {
+                "schema_version": 1,
+                "kind": "command",
+                "source": "code",
+                "mode": "isolated-copy",
+                "source_unchanged": True,
+                "result": {"status": "passed"},
+            }
+        ),
         "logs/interaction.md": "",
         "code/source.txt": "immutable",
     }
@@ -384,6 +424,8 @@ class StructureAndSkillTest(unittest.TestCase):
             "完整构建或系统启动失败时",
             "某一层失败不等于整次运行失败",
             "source_snapshot.py verify",
+            "runtime_runner.py inspect",
+            "runtime_runner.py service",
             "result/output.md",
             "logs/trace/",
             "不得删除、格式化或直接修改",
@@ -428,6 +470,7 @@ class StructureAndSkillTest(unittest.TestCase):
         self.assertIn("runtime-quality.md", text)
         self.assertIn("at least 80% targeted mutation score", normalized)
         self.assertIn("execution-fallback.md", text)
+        self.assertIn("runtime_runner.py", text)
         self.assertIn("Continue other strategies", normalized)
 
 
@@ -539,6 +582,152 @@ class DiscoveryTest(unittest.TestCase):
                 )
             )
 
+    def test_runtime_inventory_finds_declared_commands(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            shutil.copytree(FIXTURE, root / "code")
+            profile = inspect_runtime(root, Path("code"), max_files=1000)
+            self.assertFalse(profile["file_limit_reached"])
+            self.assertIn("code/pyproject.toml", profile["manifests"])
+            self.assertTrue(
+                any(
+                    item["phase"] == "test"
+                    and item["argv"][:3] == ["python3", "-m", "pytest"]
+                    for item in profile["command_candidates"]
+                )
+            )
+            self.assertTrue(
+                any(
+                    item["name"] == "python3" and item["available"]
+                    for item in profile["runtimes"]
+                )
+            )
+
+    def test_runtime_exec_isolates_source_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "code"
+            source.mkdir(parents=True)
+            (source / "write_output.py").write_text(
+                "import os\n"
+                "from pathlib import Path\n"
+                "Path('generated.tmp').write_text('temporary', encoding='utf-8')\n"
+                "print('isolated execution passed')\n"
+                "print(os.environ['APP_MODE'])\n",
+                encoding="utf-8",
+            )
+            before = tree_hash(source)
+            report = execute_isolated(
+                root,
+                Path("code"),
+                Path("."),
+                [sys.executable, "write_output.py"],
+                dependency_mode="exclude",
+                timeout_seconds=5,
+                max_output_bytes=100_000,
+                max_files=1000,
+                max_bytes=10_000_000,
+                environment_overrides={"APP_MODE": "synthetic-local-value"},
+            )
+            self.assertEqual(report["result"]["status"], "passed")
+            self.assertIn("isolated execution passed", report["result"]["stdout"])
+            self.assertNotIn("synthetic-local-value", report["result"]["stdout"])
+            self.assertIn("[REDACTED]", report["result"]["stdout"])
+            self.assertEqual(report["environment_keys"], ["APP_MODE"])
+            self.assertTrue(report["source_unchanged"])
+            self.assertFalse((source / "generated.tmp").exists())
+            self.assertEqual(before, tree_hash(source))
+
+    def test_runtime_exec_terminates_timeout(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "code"
+            source.mkdir(parents=True)
+            (source / "slow.py").write_text(
+                "import time\ntime.sleep(5)\n",
+                encoding="utf-8",
+            )
+            report = execute_isolated(
+                root,
+                Path("code"),
+                Path("."),
+                [sys.executable, "slow.py"],
+                dependency_mode="exclude",
+                timeout_seconds=1,
+                max_output_bytes=100_000,
+                max_files=1000,
+                max_bytes=10_000_000,
+            )
+            self.assertEqual(report["result"]["status"], "timeout")
+            self.assertTrue(report["result"]["timed_out"])
+            self.assertTrue(report["source_unchanged"])
+
+    def test_runtime_exec_blocks_inline_shell_code(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "code").mkdir()
+            (root / "code/source.txt").write_text("immutable", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "inline code execution"):
+                execute_isolated(
+                    root,
+                    Path("code"),
+                    Path("."),
+                    ["sh", "-c", "echo unsafe"],
+                    dependency_mode="exclude",
+                    timeout_seconds=5,
+                    max_output_bytes=100_000,
+                    max_files=1000,
+                    max_bytes=10_000_000,
+                )
+
+    def test_runtime_service_health_and_generated_probe(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "code"
+            generated = root / "result/artifacts/generated_tests"
+            source.mkdir(parents=True)
+            generated.mkdir(parents=True)
+            with socket.socket() as sock:
+                sock.bind(("127.0.0.1", 0))
+                port = sock.getsockname()[1]
+            (source / "server.py").write_text(
+                "from http.server import BaseHTTPRequestHandler, HTTPServer\n"
+                "import sys\n"
+                "class Handler(BaseHTTPRequestHandler):\n"
+                "    def do_GET(self):\n"
+                "        self.send_response(200)\n"
+                "        self.end_headers()\n"
+                "        self.wfile.write(b'healthy')\n"
+                "    def log_message(self, *_args):\n"
+                "        pass\n"
+                "HTTPServer(('127.0.0.1', int(sys.argv[1])), Handler).serve_forever()\n",
+                encoding="utf-8",
+            )
+            (generated / "probe.py").write_text(
+                "import sys, urllib.request\n"
+                "body = urllib.request.urlopen(sys.argv[1], timeout=2).read()\n"
+                "assert body == b'healthy'\n",
+                encoding="utf-8",
+            )
+            report = execute_service(
+                root,
+                Path("code"),
+                Path("."),
+                [sys.executable, "server.py", str(port)],
+                [sys.executable, "probe.py", f"http://127.0.0.1:{port}/health"],
+                f"http://127.0.0.1:{port}/health",
+                dependency_mode="exclude",
+                startup_timeout_seconds=5,
+                probe_timeout_seconds=5,
+                max_output_bytes=100_000,
+                max_files=1000,
+                max_bytes=10_000_000,
+            )
+            self.assertEqual(report["status"], "passed")
+            self.assertTrue(report["health_ready"])
+            self.assertEqual(report["probe_result"]["status"], "passed")
+            self.assertTrue(report["source_unchanged"])
+
     def test_source_snapshot_detects_changes_without_writing_source(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -615,7 +804,7 @@ class ArtifactAndTraceTest(unittest.TestCase):
             self.assertFalse((root / "result/project_discovery.json").exists())
             self.assertFalse((root / "logs/trace/old.jsonl").exists())
             self.assertEqual(manifest["run_id"], "run-test")
-            self.assertEqual(manifest["schema_version"], 5)
+            self.assertEqual(manifest["schema_version"], 6)
             self.assertTrue(manifest["independent_run"])
             self.assertEqual(manifest["minimum_strategy_families"], 3)
             self.assertEqual(manifest["complex_project_strategy_target"], 4)
@@ -642,6 +831,10 @@ class ArtifactAndTraceTest(unittest.TestCase):
             self.assertEqual(
                 manifest["runtime_quality"]["mutation"]["targeted_mutant_budget"],
                 TARGETED_MUTANT_BUDGET,
+            )
+            self.assertEqual(
+                manifest["runtime_execution"]["full_system_status"],
+                "pending",
             )
             self.assertIn("web-api", manifest["system_archetype_catalog"])
             self.assertTrue(
@@ -945,6 +1138,79 @@ class ArtifactAndTraceTest(unittest.TestCase):
             self.assertTrue(
                 any(
                     "missing key-path evidence for high-risk directions" in error
+                    for error in errors
+                )
+            )
+
+    def test_final_submission_rejects_runtime_report_without_source_integrity(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_minimal_root(root)
+            report_path = root / "result/artifacts/evidence/runtime-report.json"
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            report["source_unchanged"] = False
+            report_path.write_text(json.dumps(report), encoding="utf-8")
+            append_event(
+                root,
+                Path("logs/trace/test.jsonl"),
+                stage="runtime",
+                operation="validate-isolation",
+                command="fixture-test",
+                tool="runtime-runner",
+                input_summary="isolated baseline",
+                output_summary="source integrity missing",
+                status="error",
+                evidence_path="result/artifacts/evidence/runtime-report.json",
+                decision_summary="Reject an unverifiable runtime attempt.",
+            )
+            errors = validate_submission(root)
+            self.assertTrue(
+                any("must prove selected code source unchanged" in error for error in errors)
+            )
+
+    def test_final_submission_requires_fallback_after_full_start_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_minimal_root(root)
+            report_path = root / "result/artifacts/evidence/runtime-report.json"
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            report["result"]["status"] = "failed"
+            report_path.write_text(json.dumps(report), encoding="utf-8")
+            manifest_path = root / "result/run_manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["runtime_execution"]["full_system_status"] = "failed"
+            manifest["runtime_execution"]["attempts"] = [
+                {
+                    "id": "RUN-001",
+                    "phase": "start",
+                    "fallback_level": "full-system",
+                    "outcome": "failed",
+                    "report_path": (
+                        "result/artifacts/evidence/runtime-report.json"
+                    ),
+                }
+            ]
+            manifest["runtime_execution"]["successful_levels"] = []
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            append_event(
+                root,
+                Path("logs/trace/test.jsonl"),
+                stage="runtime",
+                operation="full-start",
+                command="fixture-start",
+                tool="runtime-runner",
+                input_summary="full system",
+                output_summary="failed without fallback",
+                status="error",
+                evidence_path="result/artifacts/evidence/runtime-report.json",
+                decision_summary="Require a lower executable layer.",
+            )
+            errors = validate_submission(root)
+            self.assertTrue(
+                any(
+                    "requires a lower-level fallback attempt" in error
                     for error in errors
                 )
             )
@@ -1460,6 +1726,7 @@ class ScriptInterfaceTest(unittest.TestCase):
             "redact.py",
             "prepare_run.py",
             "quality_tools.py",
+            "runtime_runner.py",
             "source_snapshot.py",
             "trace_log.py",
             "validate_layout.py",

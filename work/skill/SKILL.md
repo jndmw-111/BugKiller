@@ -43,32 +43,37 @@ executed evidence can confirm a Bug.
 10. Generate concrete tests during this run under
    `result/artifacts/generated_tests/`; never present old, preset, or
    answer-derived tests as independent current-run discovery.
-11. Attempt the normal build and test path. If the complete system cannot run,
-   follow [execution-fallback.md](references/execution-fallback.md) and continue
-   through independently testable layers rather than ending the run.
-12. Execute bounded tests against real target code, validate normal controls,
+11. Run `runtime_runner.py inspect`, verify declared commands, and establish the
+    smallest executable baseline. Use `runtime_runner.py exec` for writing
+    builds/tests and `runtime_runner.py service` for a localhost service plus a
+    current-run generated probe. Preserve every report in the runtime execution
+    registry.
+12. Attempt the normal build and test path. If the complete system cannot run,
+    follow [execution-fallback.md](references/execution-fallback.md) and continue
+    through independently testable layers rather than ending the run.
+13. Execute bounded tests against real target code, validate normal controls,
     and separate product
    behavior from build, dependency, environment, state, and test-code failures.
-13. Read [runtime-quality.md](references/runtime-quality.md). Use an available
+14. Read [runtime-quality.md](references/runtime-quality.md). Use an available
     target-language coverage tool to prove key product paths executed. Then run
     bounded targeted mutation tests only in a disposable isolated copy. Improve
     tests that let critical authorization, business-rule, state, or boundary
     mutants survive.
-14. Recalculate risk-weighted coverage after the breadth pass, then rebalance
+15. Recalculate risk-weighted coverage after the breadth pass, then rebalance
     remaining budget toward uncovered high-risk directions and specialty
     obligations. A complete run targets at least 95% weighted dynamic-test
     coverage; this is not a claim of 95% Bug recall.
-15. A complete run also requires measured runtime coverage, key-path evidence
+16. A complete run also requires measured runtime coverage, key-path evidence
     for high-risk directions and confirmed candidates, no unresolved critical
     mutant, and at least 80% targeted mutation score. Unsupported instrumentation
     makes the run incomplete but must not stop other executable strategies.
-16. Minimize credible triggers under `result/artifacts/reproduction/` and
+17. Minimize credible triggers under `result/artifacts/reproduction/` and
     independently repeat each from comparable state at least three times.
     Log every execution and rerun as a separate trace event.
-17. Apply [evidence-standard.md](references/evidence-standard.md). Label results
+18. Apply [evidence-standard.md](references/evidence-standard.md). Label results
     independent-confirmed, lead-confirmed, candidate,
     inconclusive, rejected, or environment-blocked.
-18. Follow [reporting-format.md](references/reporting-format.md), write
+19. Follow [reporting-format.md](references/reporting-format.md), write
     `result/output.md`, and log concise decisions, commands, results, strategy,
     fallback level, and evidence paths in `logs/trace/`.
 

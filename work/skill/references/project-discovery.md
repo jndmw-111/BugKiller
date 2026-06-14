@@ -17,7 +17,10 @@ high-signal files:
 - local service, database, queue, container, and environment requirements.
 
 Use `work/skill/scripts/discover_project.py` for a bounded first inventory, then
-verify its hints by reading the relevant files.
+verify its hints by reading the relevant files. Use
+`work/skill/scripts/runtime_runner.py inspect` to separately inventory installed
+runtimes, nested declared commands, environment templates, local dependency
+directories, service manifests, and executable entry points.
 
 ## Two-phase lead handling
 
@@ -84,6 +87,9 @@ Write `result/project_profile.md` with:
 
 - languages and frameworks, with evidence paths;
 - build and run commands, distinguishing observed from inferred;
+- installed runtime/build-tool availability and exact version evidence;
+- repository-local dependency directories and whether they can be copied
+  within isolation limits;
 - entry points and exposed interfaces;
 - existing tests and fixtures;
 - state stores and external dependencies;
@@ -92,6 +98,7 @@ Write `result/project_profile.md` with:
 - unresolved setup questions.
 - subprojects that can be built or tested independently;
 - full-start blockers and the next usable fallback level.
+- each isolated build/test/start attempt and its report path;
 - the attack-surface matrix and interfaces selected for testing;
 - reviewed answer-bearing paths, source classification, and lead coverage;
 - coverage gaps and confidence level for inferred constraints.

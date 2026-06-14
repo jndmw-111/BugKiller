@@ -10,6 +10,7 @@
   the original source snapshot.
 - Execute local build and test commands needed to verify candidates.
 - Use local services started from the authorized project when required.
+- Poll service health only through `localhost`, `127.0.0.1`, or `::1`.
 
 ## Prohibited actions
 
@@ -18,6 +19,8 @@
 - Destructive data changes, privilege escalation, persistence, credential
   extraction, or denial-of-service testing.
 - Executing downloaded or unknown remote scripts.
+- Automatically installing dependencies, pulling images, or contacting package
+  registries merely because a manifest declares them.
 - Printing environment variables or secrets into reports and traces.
 - Treating a preset test or static suspicion as a current-run confirmed Bug.
 
@@ -38,3 +41,15 @@ Mutation campaigns use one mutant at a time, a default maximum of 20 targeted
 mutants, and the normal command timeout. Never apply broad textual mutations,
 never mutate dependencies, and never run a mutant against production or
 non-disposable data. Verify `code/` integrity again after the campaign.
+
+Use `runtime_runner.py` for commands likely to write beside source or leave
+background processes. It runs without interactive input, uses a reduced
+environment, captures bounded redacted output, terminates the process group on
+timeout, and verifies the selected source remained unchanged. Its isolation is
+not a network sandbox; the Agent must still reject commands that contact
+non-local targets.
+
+Only synthetic, non-production configuration may be passed through the
+runner's generated-test environment file. Never copy real `.env` values or
+credentials into artifacts. The runner blocks path, interpreter, and dynamic
+loader injection variables and redacts explicit values from captured output.

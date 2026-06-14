@@ -19,6 +19,8 @@ and test commands, entry points, interfaces, constraints, and setup limits.
 - all 15 direction priorities, execution status, specialty obligations, and
   risk-weighted coverage before and after rebalancing;
 - full-start status and fallback levels attempted;
+- runtime capability inventory, each isolated execution report, service health
+  result, successful levels, and classified blockers;
 - commands and test counts;
 - independently confirmed Bugs;
 - project-lead confirmed Bugs;

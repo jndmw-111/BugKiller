@@ -227,6 +227,15 @@ SYSTEM_ARCHETYPES = {
 COVERAGE_TARGET_PERCENT = 95.0
 MUTATION_TARGET_PERCENT = 80.0
 TARGETED_MUTANT_BUDGET = 20
+RUNTIME_FALLBACK_LEVELS = (
+    "full-system",
+    "existing-tests",
+    "subproject-or-module",
+    "public-callable-surface",
+    "isolated-local-harness",
+    "pure-logic-verification",
+    "static-only-candidate",
+)
 RESET_DIRS = (
     "result/artifacts/generated_tests",
     "result/artifacts/reproduction",
@@ -295,7 +304,7 @@ def prepare(
 
     initialize(root, with_templates=True)
     manifest = {
-        "schema_version": 5,
+        "schema_version": 6,
         "run_id": run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         + "-"
         + uuid.uuid4().hex[:8],
@@ -414,6 +423,15 @@ def prepare(
                 "unavailable_reason": "",
             },
         },
+        "runtime_execution": {
+            "capabilities_path": (
+                "result/artifacts/evidence/runtime-capabilities.json"
+            ),
+            "full_system_status": "pending",
+            "attempts": [],
+            "successful_levels": [],
+            "blockers": [],
+        },
         "required_test_techniques": [
             "normal-control",
             "boundary-or-equivalence-partition",
@@ -429,15 +447,7 @@ def prepare(
         "candidate_budget": candidate_budget,
         "test_budget": test_budget,
         "command_timeout_seconds": command_timeout_seconds,
-        "fallback_levels": [
-            "full-system",
-            "existing-tests",
-            "subproject-or-module",
-            "public-callable-surface",
-            "isolated-local-harness",
-            "pure-logic-verification",
-            "static-only-candidate",
-        ],
+        "fallback_levels": list(RUNTIME_FALLBACK_LEVELS),
         "notes": [
             "The Agent must select at least three relevant strategies.",
             "Complex projects should target at least four relevant strategies.",
@@ -449,6 +459,7 @@ def prepare(
             "A complete run targets 95 percent risk-weighted dynamic-test coverage, not 95 percent Bug recall.",
             "Measure native runtime code coverage when available and prove key target paths executed.",
             "Run bounded targeted mutation testing only in an isolated copy; complete runs require no unresolved critical mutant and at least 80 percent mutation score.",
+            "Inventory available runtimes, execute writing commands in isolated copies, and preserve a report for every startup or fallback attempt.",
             "Log the initial execution, normal control, and every rerun separately.",
         ],
     }
