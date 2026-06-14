@@ -15,8 +15,11 @@ REQUIRED_FILES = (
     "result/output.md",
     "logs/interaction.md",
     "work/skill/references/strategy-portfolio.md",
+    "work/skill/references/system-profiles.md",
     "work/skill/references/execution-fallback.md",
+    "work/skill/references/runtime-quality.md",
     "work/skill/scripts/prepare_run.py",
+    "work/skill/scripts/quality_tools.py",
     "work/skill/scripts/source_snapshot.py",
 )
 REQUIRED_DIRS = (

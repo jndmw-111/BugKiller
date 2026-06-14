@@ -14,32 +14,61 @@ executed evidence can confirm a Bug.
 
 1. Start a self-contained run with a unique ID. Do not inherit findings or
    generated tests from earlier runs.
-2. Read [project-discovery.md](references/project-discovery.md), inventory the
-   project by subproject and entry point, and write `result/project_profile.md`.
-3. Read [strategy-portfolio.md](references/strategy-portfolio.md). Apply at
-   least three relevant strategy families in this run; record why any family is
-   not applicable.
-4. Identify interfaces, trust boundaries, state changes, parsers,
-   authorization decisions, error paths, and documented or code-enforced
-   invariants.
-5. Record each candidate as: strategy, observation, violated invariant, trigger
-   idea, safe expected result, observable failure signal, confidence, and
+2. Read [project-discovery.md](references/project-discovery.md). Perform a blind
+   discovery phase, temporarily quarantine answer-bearing tutorials, solutions,
+   advisories, and fix notes, then inventory the project by subproject and entry
+   point.
+3. Read [system-profiles.md](references/system-profiles.md). Classify the target,
+   assess all universal bug directions, and elevate archetype-specific risks.
+4. Build an attack-surface matrix from ingress through identity, parsing,
+   authorization, state, data sinks, output contexts, and external boundaries.
+   Write the verified profile to `result/project_profile.md`.
+5. Read [strategy-portfolio.md](references/strategy-portfolio.md). Apply at
+   least three independent strategy families, targeting four for complex
+   projects. Record applicability and coverage gaps.
+6. Record each candidate as: provenance, direction, strategy, target, observation,
+   invariant, trigger class, expected safe behavior, failure signal,
+   controllability, reachability, observability, confidence, and
    false-positive checks.
-6. Prioritize a bounded portfolio by impact, executability, evidence clarity,
-   environment cost, and destructive risk.
-7. Read [test-strategy.md](references/test-strategy.md). Generate concrete tests
-   during this run under `result/artifacts/generated_tests/`; never present old
-   or preset tests as current-run Agent generation.
-8. Attempt the normal build and test path. If the complete system cannot run,
+7. Complete a breadth pass before a depth pass. Prefer hypotheses across
+   different interfaces, roles, states, and data flows over minor variants of
+   an answer-bearing example.
+8. After fixing the independent first pass, review every quarantined source.
+   Register every actionable lead, dynamically test it, and report confirmed,
+   rejected, inconclusive, not-applicable, or environment-blocked outcomes.
+   Do not omit lead-derived bugs; include confirmed ones in the total Bug count.
+9. Read [test-strategy.md](references/test-strategy.md). Use applicable
+   boundary, differential, metamorphic, authorization-matrix, state-machine,
+   failure-path, encoding, and configuration techniques.
+10. Generate concrete tests during this run under
+   `result/artifacts/generated_tests/`; never present old, preset, or
+   answer-derived tests as independent current-run discovery.
+11. Attempt the normal build and test path. If the complete system cannot run,
    follow [execution-fallback.md](references/execution-fallback.md) and continue
    through independently testable layers rather than ending the run.
-9. Execute bounded tests, validate normal controls, and separate product
+12. Execute bounded tests against real target code, validate normal controls,
+    and separate product
    behavior from build, dependency, environment, state, and test-code failures.
-10. Minimize credible triggers under `result/artifacts/reproduction/` and
+13. Read [runtime-quality.md](references/runtime-quality.md). Use an available
+    target-language coverage tool to prove key product paths executed. Then run
+    bounded targeted mutation tests only in a disposable isolated copy. Improve
+    tests that let critical authorization, business-rule, state, or boundary
+    mutants survive.
+14. Recalculate risk-weighted coverage after the breadth pass, then rebalance
+    remaining budget toward uncovered high-risk directions and specialty
+    obligations. A complete run targets at least 95% weighted dynamic-test
+    coverage; this is not a claim of 95% Bug recall.
+15. A complete run also requires measured runtime coverage, key-path evidence
+    for high-risk directions and confirmed candidates, no unresolved critical
+    mutant, and at least 80% targeted mutation score. Unsupported instrumentation
+    makes the run incomplete but must not stop other executable strategies.
+16. Minimize credible triggers under `result/artifacts/reproduction/` and
     independently repeat each from comparable state at least three times.
-11. Apply [evidence-standard.md](references/evidence-standard.md). Label results
-    confirmed, candidate, inconclusive, rejected, or environment-blocked.
-12. Follow [reporting-format.md](references/reporting-format.md), write
+    Log every execution and rerun as a separate trace event.
+17. Apply [evidence-standard.md](references/evidence-standard.md). Label results
+    independent-confirmed, lead-confirmed, candidate,
+    inconclusive, rejected, or environment-blocked.
+18. Follow [reporting-format.md](references/reporting-format.md), write
     `result/output.md`, and log concise decisions, commands, results, strategy,
     fallback level, and evidence paths in `logs/trace/`.
 
@@ -55,5 +84,8 @@ blocked. End the full run after the bounded strategy portfolio is exhausted or
 no safe executable surface remains.
 
 Never preload versions, CVEs, known vulnerabilities, answer keys, Bug
-locations, or trigger methods. Finding no confirmed Bug is valid when the
-tested strategies, fallback attempts, evidence, and limitations are reported.
+locations, or trigger methods. If the repository contains them, register and
+temporarily quarantine them until independent candidates and first-pass tests
+are fixed, then review and validate every actionable lead. Continue independent
+hunting after lead validation. Finding no confirmed Bug is valid only when both
+tracks, fallback attempts, evidence, and limitations are reported.

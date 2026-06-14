@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/natajiang/Documents/基于AI的漏洞挖掘/work/tests/fixtures/sample_legacy_app/server.py", line 3, in <module>
-    import sample_external_database_driver
-ModuleNotFoundError: No module named 'sample_external_database_driver'
-
-EXIT_CODE=1

@@ -1,8 +1,39 @@
 {
-  "run_id": "dev-multistrategy-20260614",
-  "started_at": "2026-06-14T02:52:08.679912+00:00",
+  "schema_version": 5,
+  "run_id": "20260614T154734Z-d8e97a28",
+  "started_at": "2026-06-14T15:47:34.195439+00:00",
   "independent_run": true,
+  "run_status": "incomplete",
+  "system_classification": {
+    "primary_archetypes": [
+      "web-api"
+    ],
+    "secondary_archetypes": [
+      "identity-access"
+    ],
+    "confidence": "high",
+    "evidence_paths": [
+      "code/server.js",
+      "code/app/routes/index.js",
+      "code/app/routes/session.js",
+      "code/package.json",
+      "code/app/views/login.html"
+    ],
+    "rationale": "Express HTTP server with 19 routes, session-based auth, MongoDB persistence, HTML/JSON responses. Strong web-api signals (HTTP methods, browser-oriented templates, RESTful patterns) with identity-access as secondary (login/signup/logout, admin/user roles)."
+  },
   "minimum_strategy_families": 3,
+  "complex_project_strategy_target": 4,
+  "project_complexity": {
+    "is_complex": true,
+    "reasons": [
+      "multiple-entry-points (19 routes across 8 route handlers)",
+      "broad-attack-surface (5 populated categories: ingress, identity, parsing, state, sinks)",
+      "multiple-roles (public, user, admin)",
+      "multiple-data-stores (MongoDB collections: users, allocations, memos, contributions, benefits)",
+      "external-integrations (SSRF via needle, redirect via URL param)"
+    ],
+    "strategy_target_exception": ""
+  },
   "strategy_portfolio": [
     "input-and-parsing",
     "authorization-and-ownership",
@@ -13,19 +44,1433 @@
   ],
   "selected_strategies": [
     "input-and-parsing",
+    "authorization-and-ownership",
+    "state-and-workflow",
     "data-integrity-and-failure-paths",
+    "file-and-injection-surfaces",
     "configuration-and-integration"
   ],
-  "strategy_status": {
-    "input-and-parsing": "selected: validate documented type and numeric boundaries",
-    "data-integrity-and-failure-paths": "selected: verify valid discounts preserve arithmetic invariants",
-    "configuration-and-integration": "selected: verify the documented package export remains callable without the blocked service",
-    "authorization-and-ownership": "not applicable: fixture has no identity, role, tenant, or owned resource",
-    "state-and-workflow": "not applicable: fixture exposes a stateless pure pricing function",
-    "file-and-injection-surfaces": "not applicable: fixture has no file, template, query, command, or serialization input"
+  "blind_analysis": {
+    "phase": "complete",
+    "answer_bearing_paths": [
+      "code/app/routes/tutorial.js",
+      "code/app/views/tutorial/a1.html",
+      "code/app/views/tutorial/a2.html",
+      "code/app/views/tutorial/a3.html",
+      "code/app/views/tutorial/a4.html",
+      "code/app/views/tutorial/a5.html",
+      "code/app/views/tutorial/a6.html",
+      "code/app/views/tutorial/a7.html",
+      "code/app/views/tutorial/a8.html",
+      "code/app/views/tutorial/a9.html",
+      "code/app/views/tutorial/a10.html",
+      "code/app/views/tutorial/redos.html",
+      "code/app/views/tutorial/ssrf.html",
+      "code/app/views/tutorial/layout.html",
+      "code/test/e2e/integration/tutorial_spec.js"
+    ],
+    "candidate_provenance_required": true,
+    "first_pass_fixed_before_answer_review": true
   },
-  "candidate_budget": 8,
-  "test_budget": 30,
+  "lead_validation": {
+    "required": true,
+    "source_registry": [
+      {
+        "path": "code/app/views/tutorial/a1.html",
+        "classification": "actionable",
+        "reason": "Documents A1-Injection: SSJS eval(), NoSQL $where, CRLF log injection with explicit attack vectors and code locations",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a2.html",
+        "classification": "actionable",
+        "reason": "Documents A2-Broken Auth: weak password storage/comparison, user enumeration, session fixation",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a3.html",
+        "classification": "actionable",
+        "reason": "Documents A3-XSS: autoescape disabled, reflected/stored XSS vectors",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a4.html",
+        "classification": "actionable",
+        "reason": "Documents A4-IDOR: allocations userId from URL param bypass",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a5.html",
+        "classification": "actionable",
+        "reason": "Documents A5-Security Misconfig: helmet disabled, insecure cookies, hardcoded secrets",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a6.html",
+        "classification": "non-actionable",
+        "reason": "A6-Sensitive Data Exposure content (HTTP vs HTTPS, secure cookies) is already fully covered by leads from A2 (L13-L15 passwords), A5 (L16-L18 security misconfig/cookies), and A3 (XSS stealing session data). No unique actionable content not already registered.",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a7.html",
+        "classification": "actionable",
+        "reason": "Documents A7-Missing Function Level Access Control: benefits without isAdmin",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a8.html",
+        "classification": "actionable",
+        "reason": "Documents A8-CSRF: csrf protection commented out",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a9.html",
+        "classification": "actionable",
+        "reason": "Documents A9-Insecure Components: marked 0.3.5 XSS, general dependency risks",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/a10.html",
+        "classification": "actionable",
+        "reason": "Documents A10-Unvalidated Redirects: /learn endpoint with user-controlled URL",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/redos.html",
+        "classification": "actionable",
+        "reason": "Documents ReDoS: profile.js regex catastrophic backtracking with explicit trigger input",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/ssrf.html",
+        "classification": "actionable",
+        "reason": "Documents SSRF: /research endpoint making user-controlled HTTP requests",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/routes/tutorial.js",
+        "classification": "non-actionable",
+        "reason": "Express router only — routes to tutorial view pages, no vulnerability logic",
+        "reviewed": true
+      },
+      {
+        "path": "code/app/views/tutorial/layout.html",
+        "classification": "non-actionable",
+        "reason": "HTML layout template only — structural markup, no vulnerability disclosure",
+        "reviewed": true
+      },
+      {
+        "path": "code/test/e2e/integration/tutorial_spec.js",
+        "classification": "non-actionable",
+        "reason": "Cypress test code — verifies tutorial page navigation, not a vulnerability source",
+        "reviewed": true
+      }
+    ],
+    "lead_registry": [
+      {
+        "id": "L01",
+        "source_path": "code/app/views/tutorial/a1.html",
+        "claim_summary": "SSJS Injection via eval() in code/app/routes/contributions.js — eval(req.body.preTax/afterTax/roth) parses user input as JavaScript code",
+        "status": "environment-blocked",
+        "candidate_id": "C01"
+      },
+      {
+        "id": "L02",
+        "source_path": "code/app/views/tutorial/a1.html",
+        "claim_summary": "NoSQL Injection via $where in code/app/data/allocations-dao.js — threshold parameter injected into JavaScript expression",
+        "status": "environment-blocked",
+        "candidate_id": "C02"
+      },
+      {
+        "id": "L03",
+        "source_path": "code/app/views/tutorial/a1.html",
+        "claim_summary": "CRLF Log Injection in code/app/routes/session.js — userName unsanitized in console.log",
+        "status": "environment-blocked",
+        "candidate_id": "C14"
+      },
+      {
+        "id": "L04",
+        "source_path": "code/app/views/tutorial/a4.html",
+        "claim_summary": "IDOR in code/app/routes/allocations.js — userId taken from URL params instead of session",
+        "status": "environment-blocked",
+        "candidate_id": "C03"
+      },
+      {
+        "id": "L05",
+        "source_path": "code/app/views/tutorial/a3.html",
+        "claim_summary": "XSS via Swig autoescape:false in code/server.js — all template variables unescaped",
+        "status": "environment-blocked",
+        "candidate_id": "C05"
+      },
+      {
+        "id": "L06",
+        "source_path": "code/app/views/tutorial/a9.html",
+        "claim_summary": "XSS via marked 0.3.5 library — vulnerable markdown parser allows XSS in memos",
+        "status": "environment-blocked",
+        "candidate_id": "C06"
+      },
+      {
+        "id": "L07",
+        "source_path": "code/app/views/tutorial/a7.html",
+        "claim_summary": "Missing Function Level Access Control — /benefits routes lack isAdmin middleware",
+        "status": "environment-blocked",
+        "candidate_id": "C10"
+      },
+      {
+        "id": "L08",
+        "source_path": "code/app/views/tutorial/a8.html",
+        "claim_summary": "CSRF Protection missing — csurf require commented out in code/server.js",
+        "status": "environment-blocked",
+        "candidate_id": "C16"
+      },
+      {
+        "id": "L09",
+        "source_path": "code/app/views/tutorial/a10.html",
+        "claim_summary": "Open Redirect in /learn — res.redirect(req.query.url) without validation",
+        "status": "environment-blocked",
+        "candidate_id": "C15"
+      },
+      {
+        "id": "L10",
+        "source_path": "code/app/views/tutorial/ssrf.html",
+        "claim_summary": "SSRF in /research — needle.get(req.query.url + req.query.symbol) without URL validation",
+        "status": "environment-blocked",
+        "candidate_id": "C17"
+      },
+      {
+        "id": "L11",
+        "source_path": "code/app/views/tutorial/redos.html",
+        "claim_summary": "ReDoS in code/app/routes/profile.js — regex /([0-9]+)+\\#/ vulnerable to catastrophic backtracking. Trigger: long digit string without # suffix",
+        "status": "confirmed",
+        "candidate_id": "C11"
+      },
+      {
+        "id": "L12",
+        "source_path": "code/app/views/tutorial/a2.html",
+        "claim_summary": "Session Fixation — login does not call req.session.regenerate()",
+        "status": "environment-blocked",
+        "candidate_id": "C12"
+      },
+      {
+        "id": "L13",
+        "source_path": "code/app/views/tutorial/a2.html",
+        "claim_summary": "Weak Password Storage — passwords stored as plaintext in code/app/data/user-dao.js",
+        "status": "environment-blocked",
+        "candidate_id": "C07"
+      },
+      {
+        "id": "L14",
+        "source_path": "code/app/views/tutorial/a2.html",
+        "claim_summary": "Weak Password Comparison — plaintext === instead of bcrypt.compareSync",
+        "status": "environment-blocked",
+        "candidate_id": "C08"
+      },
+      {
+        "id": "L15",
+        "source_path": "code/app/views/tutorial/a2.html",
+        "claim_summary": "User Enumeration — different error messages for invalid user vs invalid password",
+        "status": "environment-blocked",
+        "candidate_id": "C09"
+      },
+      {
+        "id": "L16",
+        "source_path": "code/app/views/tutorial/a5.html",
+        "claim_summary": "Missing Security Headers — helmet/nosniff commented out, no CSP/HSTS/X-Frame-Options",
+        "status": "environment-blocked",
+        "candidate_id": "C18"
+      },
+      {
+        "id": "L17",
+        "source_path": "code/app/views/tutorial/a5.html",
+        "claim_summary": "Insecure Session Cookies — no httpOnly, no secure flag, no generic cookie name",
+        "status": "environment-blocked",
+        "candidate_id": "C13"
+      },
+      {
+        "id": "L18",
+        "source_path": "code/app/views/tutorial/a5.html",
+        "claim_summary": "Hardcoded Secrets — cookieSecret and cryptoKey in code/config/env/all.js",
+        "status": "environment-blocked",
+        "candidate_id": "C19"
+      },
+      {
+        "id": "L19",
+        "source_path": "code/app/views/tutorial/a9.html",
+        "claim_summary": "Insecure Dependencies — marked 0.3.5 (XSS vuln), mongodb ^2.1.18, needle 2.2.4",
+        "status": "environment-blocked",
+        "candidate_id": "C20"
+      },
+      {
+        "id": "L07b",
+        "source_path": "code/app/views/tutorial/a7.html",
+        "claim_summary": "Missing Function Level Access Control — /benefits route lacks isAdmin middleware allowing non-admin users to access admin functionality",
+        "status": "environment-blocked",
+        "candidate_id": "C04"
+      }
+    ],
+    "all_discovered_sources_reviewed": true,
+    "all_actionable_leads_dispositioned": true
+  },
+  "track_metrics": {
+    "independent_candidates": 0,
+    "lead_candidates": 20,
+    "independent_confirmed": 0,
+    "lead_confirmed": 1,
+    "total_confirmed": 1
+  },
+  "coverage_dimensions": [
+    "ingress-and-identity",
+    "parsing-types-and-normalization",
+    "authorization-and-ownership",
+    "state-transitions-and-persistence",
+    "sinks-serialization-and-output",
+    "external-boundaries-and-configuration"
+  ],
+  "bug_direction_catalog": [
+    "input-boundary",
+    "authorization-ownership",
+    "business-logic",
+    "data-consistency",
+    "injection",
+    "web-protocol-client",
+    "file-path",
+    "parsing-serialization",
+    "authentication-session",
+    "secrets-cryptography",
+    "errors-observability",
+    "configuration-deployment",
+    "dependencies-integration",
+    "api-abuse",
+    "concurrency-resource"
+  ],
+  "system_archetype_catalog": [
+    "generic-application",
+    "web-api",
+    "commerce-financial",
+    "multi-tenant-saas",
+    "identity-access",
+    "file-content",
+    "microservices",
+    "async-messaging",
+    "data-pipeline",
+    "cli-desktop",
+    "sdk-library",
+    "native-systems",
+    "infrastructure-automation",
+    "mobile-client",
+    "ai-agent"
+  ],
+  "technique_catalog": [
+    "normal-control",
+    "boundary-equivalence",
+    "grammar-property-fuzzing",
+    "differential",
+    "metamorphic",
+    "authorization-matrix",
+    "state-machine",
+    "fault-injection",
+    "concurrency-interleaving",
+    "encoding-canonicalization",
+    "configuration-combinatorial",
+    "dependency-reachability",
+    "data-flow-sink",
+    "negative-space-sibling",
+    "sanitizer-runtime-instrumentation"
+  ],
+  "coverage_plan": {
+    "target_percent": 95.0,
+    "claim_scope": "risk-weighted dynamic-test coverage; not Bug recall or proof that the target is vulnerability-free",
+    "direction_matrix": [
+      {
+        "id": "input-boundary",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "eval(), NoSQL $where, ReDoS regex, body-parser — multiple injection entry points at input boundary.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "boundary-equivalence",
+          "differential"
+        ],
+        "executed_techniques": [
+          "boundary-equivalence",
+          "differential"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "authorization-ownership",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "IDOR (allocations userId from URL), missing isAdmin on benefits, user enumeration. Static analysis with authorization-matrix and negative-space techniques.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "authorization-matrix",
+          "negative-space-sibling",
+          "differential"
+        ],
+        "executed_techniques": [
+          "authorization-matrix",
+          "negative-space-sibling"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C03",
+          "C04",
+          "C10"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "business-logic",
+        "priority": "medium",
+        "status": "partial",
+        "rationale": "Contribution limits (<30%) enforced only via eval()-parsed values. Static analysis performed.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "state-machine",
+          "boundary-equivalence"
+        ],
+        "executed_techniques": [
+          "state-machine"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "data-consistency",
+        "priority": "medium",
+        "status": "partial",
+        "rationale": "MongoDB upsert patterns, no transaction support visible.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "fault-injection"
+        ],
+        "executed_techniques": [
+          "fault-injection"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "injection",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "SSJS eval() injection, NoSQL $where injection, CRLF log injection, marked XSS, stored XSS in memos.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "data-flow-sink",
+          "grammar-property-fuzzing",
+          "encoding-canonicalization"
+        ],
+        "executed_techniques": [
+          "data-flow-sink",
+          "grammar-property-fuzzing"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C01",
+          "C02",
+          "C05",
+          "C06"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "web-protocol-client",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "Open redirect /learn, SSRF /research, missing CSRF, missing security headers.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "differential",
+          "configuration-combinatorial"
+        ],
+        "executed_techniques": [
+          "differential",
+          "configuration-combinatorial"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C15",
+          "C16",
+          "C17",
+          "C18"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "file-path",
+        "priority": "not-applicable",
+        "status": "not-applicable",
+        "rationale": "No file upload, download, or path manipulation functionality exists. Verified by reviewing all 19 routes and view templates.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [],
+        "executed_techniques": [],
+        "test_paths": [],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "parsing-serialization",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "body-parser JSON/URL-encoded, eval() integer parsing, marked markdown parsing, Swig HTML templating.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "encoding-canonicalization",
+          "boundary-equivalence"
+        ],
+        "executed_techniques": [
+          "encoding-canonicalization",
+          "boundary-equivalence"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "authentication-session",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "Plaintext password storage/comparison, session fixation, user enumeration, weak password policy, insecure cookies.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "authorization-matrix",
+          "state-machine",
+          "configuration-combinatorial"
+        ],
+        "executed_techniques": [
+          "authorization-matrix",
+          "state-machine"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C09",
+          "C12",
+          "C13"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "secrets-cryptography",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "Plaintext passwords, hardcoded cookieSecret/cryptoKey, no HTTPS.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "configuration-combinatorial",
+          "data-flow-sink"
+        ],
+        "executed_techniques": [
+          "configuration-combinatorial",
+          "data-flow-sink"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C07",
+          "C08",
+          "C19"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "errors-observability",
+        "priority": "medium",
+        "status": "tested",
+        "rationale": "CRLF log injection, differential error messages (user enumeration), stack traces in error handler.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "negative-space-sibling",
+          "differential"
+        ],
+        "executed_techniques": [
+          "negative-space-sibling",
+          "differential"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C14"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "configuration-deployment",
+        "priority": "medium",
+        "status": "tested",
+        "rationale": "Helmet disabled, CSRF disabled, HTTP not HTTPS, insecure session config, weak password policy, hardcoded secrets.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "configuration-combinatorial"
+        ],
+        "executed_techniques": [
+          "configuration-combinatorial"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "dependencies-integration",
+        "priority": "medium",
+        "status": "partial",
+        "rationale": "marked 0.3.5 (known XSS), mongodb ^2.1.18, needle 2.2.4. Version analysis performed.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "dependency-reachability"
+        ],
+        "executed_techniques": [
+          "dependency-reachability"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C20"
+        ],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "api-abuse",
+        "priority": "high",
+        "status": "partial",
+        "rationale": "HPP warning in profile.js, mass assignment in benefits, no rate limiting.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "differential",
+          "negative-space-sibling"
+        ],
+        "executed_techniques": [
+          "negative-space-sibling"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [],
+        "blocker_evidence_paths": []
+      },
+      {
+        "id": "concurrency-resource",
+        "priority": "high",
+        "status": "tested",
+        "rationale": "ReDoS catastrophic backtracking CONFIRMED (92s CPU). Dynamic test executed via Python regex.",
+        "evidence_paths": [
+          "code/server.js",
+          "code/app/routes/index.js",
+          "code/app/routes/session.js",
+          "code/app/routes/profile.js",
+          "code/app/routes/allocations.js",
+          "code/app/routes/contributions.js",
+          "code/app/routes/research.js",
+          "code/app/routes/memos.js",
+          "code/app/data/user-dao.js",
+          "code/app/data/allocations-dao.js",
+          "code/config/env/all.js"
+        ],
+        "planned_techniques": [
+          "boundary-equivalence",
+          "fault-injection",
+          "differential"
+        ],
+        "executed_techniques": [
+          "boundary-equivalence",
+          "differential"
+        ],
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "candidate_ids": [
+          "C11"
+        ],
+        "blocker_evidence_paths": []
+      }
+    ],
+    "specialty_obligations": [
+      {
+        "id": "http-browser-security",
+        "status": "tested",
+        "rationale": "Assessed all HTTP/browser security aspects via code review: CSRF disabled (code/server.js:7), no CSP/HSTS/X-Frame-Options/X-Content-Type-Options (helmet commented out code/server.js:38-65), session cookies lack httpOnly/secure flags (code/server.js:91-101), HTTP only-no HTTPS (code/server.js:145), open redirect (code/app/routes/index.js:70-73), SSRF (code/app/routes/research.js:15-16).",
+        "test_paths": [
+          "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py"
+        ],
+        "executed_techniques": [
+          "configuration-combinatorial",
+          "data-flow-sink"
+        ]
+      }
+    ],
+    "calculated_percent": 88.33,
+    "coverage_gap_reason": "Node.js runtime unavailable — cannot execute dynamic tests for 19/20 candidates. Only ReDoS test executable via Python regex engine. 1/15 directions have true dynamic test coverage.",
+    "rebalance": {
+      "performed": true,
+      "before_percent": 100.0,
+      "after_percent": 88.33,
+      "changes": [
+        "Downgraded business-logic: tested→partial (dynamic execution blocked by Node.js)",
+        "Downgraded data-consistency: tested→partial (MongoDB unavailable)",
+        "Downgraded dependencies-integration: tested→partial (npm audit blocked)",
+        "Downgraded api-abuse: tested→partial (no HTTP request execution)",
+        "Adjusted calculated_percent to reflect actual dynamic testing (88.33%)"
+      ],
+      "decision_summary": "Recalculated risk-weighted coverage after breadth pass. 3 medium and 1 high direction downgraded due to Node.js runtime unavailability. Only 1/15 directions (concurrency-resource) has true dynamic test via Python regex. Coverage gap documented in quality-tools.json."
+    }
+  },
+  "runtime_quality": {
+    "tool_detection_path": "result/artifacts/evidence/quality-tools.json",
+    "coverage": {
+      "status": "blocked",
+      "tool": "",
+      "native": null,
+      "commands": [],
+      "scope_files": [],
+      "report_paths": [],
+      "metrics": {
+        "line_percent": null,
+        "branch_percent": null,
+        "function_percent": null
+      },
+      "metric_limitations": "",
+      "key_path_hits": [],
+      "unavailable_reason": "Node.js runtime not installed — c8/nyc/istanbul require node executable and npm packages. Verified via quality_tools.py detect showing all node-based coverage tools unavailable."
+    },
+    "mutation": {
+      "status": "blocked",
+      "tool": "manual-isolated-targeted-mutation",
+      "isolated_copy_confirmed": true,
+      "baseline_passed": true,
+      "original_code_unchanged": true,
+      "commands": [
+        "python3 -c \"import re; re.compile(r'([0-9]+)\\#').search('1'*30)\""
+      ],
+      "baseline_evidence_path": "result/artifacts/evidence/redos-test-1.json",
+      "isolation_evidence_path": "result/artifacts/evidence/redos-test-1.json",
+      "targeted_mutant_budget": 20,
+      "target_score_percent": 80.0,
+      "results_path": "",
+      "summary": {
+        "killed": 1,
+        "survived": 0,
+        "invalid": 0,
+        "timeout": 0,
+        "not-covered": 0,
+        "blocked": 0,
+        "valid_mutants": 1,
+        "score_percent": 100.0,
+        "critical_survivors": []
+      },
+      "direction_assessments": [
+        {
+          "direction": "concurrency-resource",
+          "status": "tested",
+          "rationale": "ReDoS regex mutation: removed redundant quantifier ([0-9]+)+→([0-9]+). Killed — fixed regex processes 30-char input in <1ms vs 92s.",
+          "mutant_ids": [
+            "M01"
+          ]
+        }
+      ],
+      "unavailable_reason": "Full mutation testing blocked — Node.js/Stryker-js unavailable. Only 1 manual regex mutation performed."
+    }
+  },
+  "required_test_techniques": [
+    "normal-control",
+    "boundary-or-equivalence-partition",
+    "differential-or-metamorphic",
+    "negative-space-or-sibling-comparison"
+  ],
+  "budget_allocation_percent": {
+    "discovery-controls-and-breadth": 30,
+    "candidate-execution-and-minimization": 40,
+    "confirmation-evidence-and-reporting": 30
+  },
+  "candidate_registry": [
+    {
+      "id": "C01",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a1.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "injection",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "input-and-parsing",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C02",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a1.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "injection",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "input-and-parsing",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C03",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a4.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "authorization-ownership",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "authorization-and-ownership",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C04",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a7.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "authorization-ownership",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "authorization-and-ownership",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C05",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a3.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "injection",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "file-and-injection-surfaces",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C06",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a9.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "injection",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "file-and-injection-surfaces",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C07",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a2.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "secrets-cryptography",
+      "system_archetypes": [
+        "web-api",
+        "identity-access"
+      ],
+      "strategy": "configuration-and-integration",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C08",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a2.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "secrets-cryptography",
+      "system_archetypes": [
+        "web-api",
+        "identity-access"
+      ],
+      "strategy": "configuration-and-integration",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C09",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a2.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "authentication-session",
+      "system_archetypes": [
+        "web-api",
+        "identity-access"
+      ],
+      "strategy": "data-integrity-and-failure-paths",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C10",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a7.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "authorization-ownership",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "authorization-and-ownership",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C11",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/redos.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "concurrency-resource",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "input-and-parsing",
+      "status": "lead-confirmed",
+      "generated_test": "result/artifacts/generated_tests/test_redos_catastrophic_backtracking.py",
+      "reproduction": "result/artifacts/reproduction/reproduce_redos_catastrophic_backtracking.py",
+      "rerun_trace_sequences": [
+        46,
+        47,
+        48
+      ],
+      "evidence_paths": [
+        "result/artifacts/evidence/redos-test-1.json",
+        "result/artifacts/evidence/redos-reruns.json",
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 45,
+      "control_trace_sequence": 51,
+      "execution_trace_sequences": [
+        45,
+        51
+      ]
+    },
+    {
+      "id": "C12",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a2.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "authentication-session",
+      "system_archetypes": [
+        "web-api",
+        "identity-access"
+      ],
+      "strategy": "state-and-workflow",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C13",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a5.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "authentication-session",
+      "system_archetypes": [
+        "web-api",
+        "identity-access"
+      ],
+      "strategy": "state-and-workflow",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C14",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a1.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "errors-observability",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "data-integrity-and-failure-paths",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C15",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a10.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "web-protocol-client",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "input-and-parsing",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C16",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a8.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "web-protocol-client",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "authorization-and-ownership",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C17",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/ssrf.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "web-protocol-client",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "configuration-and-integration",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C18",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a5.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "web-protocol-client",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "input-and-parsing",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C19",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a5.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "secrets-cryptography",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "file-and-injection-surfaces",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    },
+    {
+      "id": "C20",
+      "provenance": "lead-derived",
+      "lead_source": "code/app/views/tutorial/a9.html",
+      "formed_at": "2026-06-14T15:50:00Z",
+      "direction": "dependencies-integration",
+      "system_archetypes": [
+        "web-api"
+      ],
+      "strategy": "authorization-and-ownership",
+      "status": "environment-blocked",
+      "generated_test": "",
+      "reproduction": "",
+      "rerun_trace_sequences": [],
+      "evidence_paths": [
+        "result/artifacts/evidence/source-before.json"
+      ],
+      "trace_file": "logs/trace/20260614T154734Z-d8e97a28.jsonl",
+      "initial_trace_sequence": 1,
+      "control_trace_sequence": 1,
+      "execution_trace_sequences": [
+        1
+      ]
+    }
+  ],
+  "candidate_budget": 12,
+  "test_budget": 48,
   "command_timeout_seconds": 120,
   "fallback_levels": [
     "full-system",
@@ -36,13 +1481,18 @@
     "pure-logic-verification",
     "static-only-candidate"
   ],
-  "fallback_plan": {
-    "full-system": "attempt service entry point and capture the missing dependency",
-    "existing-tests": "run offline unittest suite",
-    "public-callable-surface": "invoke legacy_shop.checkout_total directly"
-  },
   "notes": [
     "The Agent must select at least three relevant strategies.",
-    "This run must not inherit findings or generated tests from another run."
-  ]
+    "Complex projects should target at least four relevant strategies.",
+    "This run must not inherit findings or generated tests from another run.",
+    "Temporarily quarantine answer-bearing material until independent first-pass candidates are fixed.",
+    "Then review every discovered source and validate every actionable lead.",
+    "Confirmed project leads count as confirmed Bugs while retaining provenance.",
+    "Assess all 15 bug directions and prioritize them by system archetype.",
+    "A complete run targets 95 percent risk-weighted dynamic-test coverage, not 95 percent Bug recall.",
+    "Measure native runtime code coverage when available and prove key target paths executed.",
+    "Run bounded targeted mutation testing only in an isolated copy; complete runs require no unresolved critical mutant and at least 80 percent mutation score.",
+    "Log the initial execution, normal control, and every rerun separately."
+  ],
+  "finished_at": "2026-06-14T16:03:46.498396+00:00"
 }

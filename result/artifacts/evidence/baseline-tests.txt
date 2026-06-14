@@ -1,9 +1,0 @@
-test_discount_above_maximum_is_rejected (test_pricing.PricingTest) ... ok
-test_valid_discount (test_pricing.PricingTest) ... ok
-
-----------------------------------------------------------------------
-Ran 2 tests in 0.000s
-
-OK
-
-EXIT_CODE=0

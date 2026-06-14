@@ -24,9 +24,24 @@ to the run. Record each attempted level, its command, result, and evidence.
 
 - Never add stubs, tests, or build files to `code/`.
 - Use `result/artifacts/` or a temporary isolated copy.
+- Prefer the target project's bundled runtime and installed dependencies before
+  replacing infrastructure.
+- A fake may stand in for a dependency only when the target module, validation,
+  authorization, state transition, parser, or transformation itself still
+  executes.
+- A cross-language reimplementation or manually predicted output is a
+  hypothesis aid, not confirmation evidence.
 - Do not download unknown remote scripts or silently install unapproved
   dependencies.
 - A failure at one level should not block unrelated modules or strategies.
+- Explore independent modules in parallel or breadth-first when practical; the
+  levels are a capability ladder, not a reason to follow one blocked path only.
 - State clearly which level produced each piece of evidence.
 - Confirmation still requires actual execution and three consistent reruns;
   level 6 can never produce a confirmed Bug.
+- Measure runtime coverage at the deepest executable fallback level. Module
+  coverage is valid evidence for that module even when full-system coverage is
+  unavailable.
+- Run mutation testing only where a passing baseline and disposable isolated
+  source copy are available. A blocked mutation campaign does not block other
+  modules, but it prevents a `complete` run.
